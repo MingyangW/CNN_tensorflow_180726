@@ -7,13 +7,12 @@ Created on Thu Jul 26 15:12:55 2018
 """
 
 import tensorflow as tf
-import numpy as np
 
 #计算准确率
 def Accuracy(x, y):
     global prediction
     pre = sess.run(prediction, feed_dict={x_data:x})
-    correct_pre = tf.equal(tf.arg_max(pre), tf.arg_max(y))
+    correct_pre = tf.equal(tf.arg_max(pre, 1), tf.arg_max(y, 1))
     accur = tf.reduce_mean(tf.cast(correct_pre, dtype=tf.float32))
     result = sess.run(accur, feed_dict={x_data:x, y_data:y})
     return result
@@ -36,7 +35,7 @@ pool_1 = tf.nn.max_pool(h_conv_1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padd
 #创建卷积层1
 W_conv_2 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1))
 b_conv_2 = tf.Variable(tf.constant(0.1, shape=[64]))
-h_conv_2 = tf.nn.relu(tf.nn.conv2d(pool_1, W_conv_2, strides=[1, 1, 1, 1], padding='SAME') + b_conv_1)
+h_conv_2 = tf.nn.relu(tf.nn.conv2d(pool_1, W_conv_2, strides=[1, 1, 1, 1], padding='SAME') + b_conv_2)
 pool_2 = tf.nn.max_pool(h_conv_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 pool_2_reshape = tf.reshape(pool_2, [-1, 7*7*64])
@@ -62,8 +61,10 @@ init = tf.global_variables_initializer()
 
 with tf.Session() as sess:
     sess.run(init)
-    for i in range(101):
+    for i in range(501):
         x_batch, y_batch = mnist.train.next_batch(100)
         sess.run(train, feed_dict={x_data:x_batch, y_data:y_batch})
-        if i%10==0:
+        if i%50==0:
             print(Accuracy(mnist.test.images, mnist.test.labels))
+
+
