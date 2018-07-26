@@ -61,10 +61,10 @@ init = tf.global_variables_initializer()
 
 with tf.Session() as sess:
     sess.run(init)
-    for i in range(501):
+    for i in range(1001):
         x_batch, y_batch = mnist.train.next_batch(100)
         sess.run(train, feed_dict={x_data:x_batch, y_data:y_batch})
-        if i%50==0:
+        if i%100==0:
             print(Accuracy(mnist.test.images, mnist.test.labels))
 
 
